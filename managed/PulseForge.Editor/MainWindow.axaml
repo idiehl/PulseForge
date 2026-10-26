@@ -1,0 +1,365 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:PulseForge.Editor"
+        x:Class="PulseForge.Editor.MainWindow"
+        Title="PulseForge — Precision Stereo Output Workstation"
+        Width="1500" Height="900" MinWidth="640" MinHeight="360"
+        WindowStartupLocation="CenterScreen"
+        Background="#090D12">
+  <Viewbox Stretch="Uniform">
+  <Grid Width="1500" Height="900" RowDefinitions="54,*,202" ColumnDefinitions="255,*,318">
+    <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#111822" BorderBrush="#293548" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,26,Auto,*,Auto,18,Auto" Margin="14,0">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+          <Border Width="30" Height="30" CornerRadius="7" Background="#64D8CB">
+            <Grid>
+              <TextBlock Text="≋" Foreground="#071311" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-3,0,0" />
+            </Grid>
+          </Border>
+          <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="PULSEFORGE" FontWeight="Bold" FontSize="13" Foreground="#EEF8F6" LetterSpacing="1.8" />
+            <TextBlock Text="Precision stereo output workstation" FontSize="9" Foreground="#7E90A6" />
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
+          <Button x:Name="ActivationButton" Content="◇  ACTIVATE" Click="OnActivationClicked" ToolTip.Tip="Open Windows Sound settings and deliberately select PulseForge Virtual Output as the default endpoint." />
+          <Button x:Name="RouteButton" Classes="accent" Content="▶  START ROUTE" Click="OnRouteClicked" ToolTip.Tip="Capture only the PulseForge virtual endpoint and render the processed signal to the selected physical device." />
+          <Button x:Name="StopRouteButton" Content="■  STOP" Click="OnStopRouteClicked" />
+          <Button x:Name="BypassButton" Content="◉  BYPASS" Click="OnBypassClicked" ToolTip.Tip="Crossfade to unity processing without stopping endpoint routing." />
+          <Button x:Name="DemoButton" Content="∿  DEMO" Click="OnDemoClicked" ToolTip.Tip="Run the visual demonstration signal without playing or taking over system audio." />
+        </StackPanel>
+        <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Right">
+          <TextBlock x:Name="HeaderStateText" Text="CONNECTING TO AUDIO HOST" Classes="sectionTitle" HorizontalAlignment="Right" />
+          <TextBlock x:Name="HeaderFormatText" Text="48 kHz · 128 frames · no route" Classes="caption" HorizontalAlignment="Right" />
+        </StackPanel>
+        <Border Grid.Column="6" Background="#142D28" BorderBrush="#28574F" BorderThickness="1" CornerRadius="9" Padding="9,4" VerticalAlignment="Center">
+          <TextBlock x:Name="EngineBadgeText" Text="ENGINE STARTING" Foreground="#72DFC4" FontSize="9" FontWeight="SemiBold" />
+        </Border>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1" Grid.Column="0" Background="#0E141D" BorderBrush="#263244" BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="12">
+        <TextBlock Classes="sectionTitle" Text="OUTPUT ROUTING" Margin="2,0,0,7" />
+        <Border Grid.Row="1" Classes="card" Padding="10">
+          <StackPanel Spacing="7">
+            <TextBlock Text="PulseForge source" Classes="caption" />
+            <ComboBox x:Name="SourceDeviceBox" MinHeight="30" ToolTip.Tip="Only a PulseForge virtual render endpoint can be used as the system source." />
+            <TextBlock Text="Physical output" Classes="caption" />
+            <ComboBox x:Name="OutputDeviceBox" MinHeight="30" SelectionChanged="OnOutputDeviceChanged" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+              <StackPanel>
+                <TextBlock Text="Transport" Classes="caption" />
+                <ComboBox x:Name="TransportBox" SelectedIndex="0" SelectionChanged="OnDevicePolicyChanged">
+                  <ComboBoxItem Content="Raw shared" />
+                  <ComboBoxItem Content="Exclusive" />
+                  <ComboBoxItem Content="Compatible" />
+                </ComboBox>
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="Buffer" Classes="caption" />
+                <ComboBox x:Name="BufferBox" SelectedIndex="1" SelectionChanged="OnDevicePolicyChanged">
+                  <ComboBoxItem Content="Low latency" />
+                  <ComboBoxItem Content="Balanced" />
+                  <ComboBoxItem Content="Safe" />
+                </ComboBox>
+              </StackPanel>
+            </Grid>
+            <TextBlock x:Name="RoutingHintText" Text="The guarded virtual driver is not installed. Demo visualization remains available." TextWrapping="Wrap" Foreground="#718399" FontSize="9" />
+          </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="2" RowDefinitions="Auto,*" Margin="0,13,0,8">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Classes="sectionTitle" Text="OUTPUT MODES" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Content="↻" Width="28" Height="26" Padding="0" Click="OnRefreshClicked" ToolTip.Tip="Refresh modes and audio endpoints. Stop an active route before refreshing devices." />
+          </Grid>
+          <ListBox x:Name="ModeList" Grid.Row="1" Margin="-4,6,-4,0" SelectionChanged="OnModeSelectionChanged">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                  <Border Width="4" CornerRadius="2" Background="{Binding Accent}" />
+                  <StackPanel Grid.Column="1">
+                    <TextBlock Text="{Binding Name}" Foreground="#DFE8F1" FontSize="11" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Description}" Foreground="#6F8095" FontSize="9" TextTrimming="CharacterEllipsis" MaxWidth="195" />
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,*,*" ColumnSpacing="5">
+          <Button Content="＋  Duplicate" Click="OnDuplicateModeClicked" ToolTip.Tip="Create an editable copy. Built-in starting points are immutable." />
+          <Button Grid.Column="1" Content="⌑  Save" Click="OnSaveModeClicked" />
+          <Button Grid.Column="2" Content="•••">
+            <Button.Flyout>
+              <MenuFlyout>
+                <MenuItem Header="Import portable mode…" Click="OnImportModeClicked" />
+                <MenuItem Header="Export selected mode…" Click="OnExportModeClicked" />
+              </MenuFlyout>
+            </Button.Flyout>
+          </Button>
+        </Grid>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" Grid.Column="1" RowDefinitions="46,1.25*,0.75*" Background="#090D12" Margin="12,8">
+      <Grid Grid.Row="0" ColumnDefinitions="Auto,18,Auto,*,Auto" Margin="3,0">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+          <TextBlock Text="PARAMETRIC RESPONSE + LIVE SPECTRUM" Classes="sectionTitle" />
+          <TextBlock Text="Drag a node for frequency and gain · use the inspector for exact Q and shape" Classes="caption" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+          <Button x:Name="LeftChannelButton" Classes="segment accent" Content="L" Click="OnLeftChannelClicked" />
+          <Button x:Name="RightChannelButton" Classes="segment" Content="R" Click="OnRightChannelClicked" />
+          <CheckBox x:Name="LinkChannelsBox" Content="LINK L→R" IsChecked="True" Margin="8,0,0,0" Checked="OnLinkChannelsChanged" Unchecked="OnLinkChannelsChanged" ToolTip.Tip="Enabling linked edits explicitly copies the visible channel to the other channel." />
+        </StackPanel>
+        <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+          <TextBlock Text="PRE FFT" Foreground="#65758A" FontSize="9" />
+          <TextBlock Text="POST FFT" Foreground="#8CAAC4" FontSize="9" />
+          <TextBlock Text="PHASE ±180°" Foreground="#8E9DB0" FontSize="9" />
+        </StackPanel>
+      </Grid>
+      <Border Grid.Row="1" Classes="card" Margin="0,2,0,8" ClipToBounds="True">
+        <local:EqualizerGraph x:Name="EqGraph" MinHeight="260" />
+      </Border>
+      <Border Grid.Row="2" Classes="card" Padding="5">
+        <TabControl x:Name="AnalyzerTabs">
+          <TabItem Header="WAVEFORM">
+            <Grid RowDefinitions="Auto,*" Margin="5">
+              <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,3">
+                <TextBlock Text="PRE / POST OSCILLOSCOPE · L + R" Classes="sectionTitle" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7">
+                  <TextBlock Text="TIME" Classes="caption" VerticalAlignment="Center" />
+                  <Slider x:Name="ScopeTimebaseSlider" Minimum="1" Maximum="8" Value="1" Width="64" ValueChanged="OnScopeViewChanged" ToolTip.Tip="Horizontal timebase and waveform zoom, 1× to 8×." />
+                  <TextBlock Text="GAIN" Classes="caption" VerticalAlignment="Center" />
+                  <Slider x:Name="ScopeGainSlider" Minimum="0.5" Maximum="4" Value="1" Width="64" ValueChanged="OnScopeViewChanged" ToolTip.Tip="Oscilloscope display gain only; this never changes audio." />
+                  <Button Content="↺ RESET" Padding="7,3" Click="OnResetTelemetryClicked" ToolTip.Tip="Reset filter state and telemetry history without changing the active mode." />
+                  <CheckBox x:Name="FreezeScopeBox" Content="FREEZE" Checked="OnFreezeChanged" Unchecked="OnFreezeChanged" />
+                </StackPanel>
+              </Grid>
+              <local:WaveformScope x:Name="WaveformView" Grid.Row="1" ToolTip.Tip="Mouse wheel changes the visible time span. The display triggers on a rising left-channel zero crossing." />
+            </Grid>
+          </TabItem>
+          <TabItem Header="PHASE + CORRELATION">
+            <Grid ColumnDefinitions="*,210" Margin="8">
+              <local:PhaseScope x:Name="PhaseView" />
+              <StackPanel Grid.Column="1" Margin="14,10" Spacing="10">
+                <TextBlock Text="STEREO FIELD" Classes="sectionTitle" />
+                <TextBlock x:Name="CorrelationText" Text="+1.00 correlation" FontSize="22" FontFamily="Cascadia Mono, Consolas" Foreground="#65D9CC" />
+                <TextBlock x:Name="MonoCompatibilityText" Text="Strong mono compatibility" Foreground="#91A5BD" />
+                <TextBlock Text="The vector display rotates mid vertically and side horizontally. Negative correlation is marked as a compatibility risk; it is not changed automatically." Classes="caption" TextWrapping="Wrap" />
+              </StackPanel>
+            </Grid>
+          </TabItem>
+        </TabControl>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="1" Grid.Column="2" Background="#0E141D" BorderBrush="#263244" BorderThickness="1,0,0,0">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="12" Spacing="10">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel>
+              <TextBlock Classes="sectionTitle" Text="FILTER INSPECTOR" />
+              <TextBlock x:Name="SelectedBandTitle" Text="BAND 01 · LEFT" Foreground="#E6F1F1" FontSize="14" FontWeight="SemiBold" />
+            </StackPanel>
+            <CheckBox x:Name="BandEnabledBox" Grid.Column="1" Content="ON" IsChecked="True" Checked="OnBandEnabledChanged" Unchecked="OnBandEnabledChanged" />
+          </Grid>
+          <Border Classes="card" Padding="10">
+            <Grid ColumnDefinitions="*,108" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="7">
+              <TextBlock Text="Shape" Classes="caption" VerticalAlignment="Center" />
+              <ComboBox x:Name="BandShapeBox" Grid.Column="1" SelectionChanged="OnBandShapeChanged">
+                <ComboBoxItem Content="Bell" />
+                <ComboBoxItem Content="Notch" />
+                <ComboBoxItem Content="Low shelf" />
+                <ComboBoxItem Content="High shelf" />
+              </ComboBox>
+              <TextBlock Grid.Row="1" Text="Frequency (Hz)" Classes="caption" VerticalAlignment="Center" />
+              <TextBox x:Name="BandFrequencyBox" Grid.Row="1" Grid.Column="1" LostFocus="OnBandNumericCommitted" />
+              <TextBlock Grid.Row="2" Text="Gain (dB)" Classes="caption" VerticalAlignment="Center" />
+              <TextBox x:Name="BandGainBox" Grid.Row="2" Grid.Column="1" LostFocus="OnBandNumericCommitted" />
+              <TextBlock Grid.Row="3" Text="Q / bandwidth" Classes="caption" VerticalAlignment="Center" />
+              <TextBox x:Name="BandQBox" Grid.Row="3" Grid.Column="1" LostFocus="OnBandNumericCommitted" />
+            </Grid>
+          </Border>
+
+          <TextBlock Classes="sectionTitle" Text="PASS FILTERS" Margin="0,3,0,0" />
+          <Border Classes="card" Padding="10">
+            <StackPanel Spacing="8">
+              <Grid ColumnDefinitions="Auto,*,86,82" ColumnSpacing="6">
+                <CheckBox x:Name="HighPassEnabledBox" Content="HPF" Checked="OnPassFilterChanged" Unchecked="OnPassFilterChanged" />
+                <TextBox x:Name="HighPassFrequencyBox" Grid.Column="2" LostFocus="OnPassFilterChanged" />
+                <ComboBox x:Name="HighPassSlopeBox" Grid.Column="3" SelectionChanged="OnPassFilterChanged">
+                  <ComboBoxItem Content="12 dB" /><ComboBoxItem Content="24 dB" /><ComboBoxItem Content="36 dB" /><ComboBoxItem Content="48 dB" />
+                </ComboBox>
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*,86,82" ColumnSpacing="6">
+                <CheckBox x:Name="LowPassEnabledBox" Content="LPF" Checked="OnPassFilterChanged" Unchecked="OnPassFilterChanged" />
+                <TextBox x:Name="LowPassFrequencyBox" Grid.Column="2" LostFocus="OnPassFilterChanged" />
+                <ComboBox x:Name="LowPassSlopeBox" Grid.Column="3" SelectionChanged="OnPassFilterChanged">
+                  <ComboBoxItem Content="12 dB" /><ComboBoxItem Content="24 dB" /><ComboBoxItem Content="36 dB" /><ComboBoxItem Content="48 dB" />
+                </ComboBox>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,3,0,0">
+            <TextBlock Classes="sectionTitle" Text="DYNAMIC RESONANCE DAMPING" VerticalAlignment="Center" />
+            <CheckBox x:Name="DampingEnabledBox" Grid.Column="1" Content="ACTIVE" Checked="OnDampingChanged" Unchecked="OnDampingChanged" />
+          </Grid>
+          <Border Classes="card" Padding="10">
+            <StackPanel Spacing="7">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Sensitivity" Classes="caption" /><TextBlock x:Name="DampingSensitivityText" Grid.Column="1" Classes="value" Text="5.0 dB" />
+              </Grid>
+              <Slider x:Name="DampingSensitivitySlider" Minimum="0" Maximum="18" ValueChanged="OnDampingChanged" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Maximum reduction" Classes="caption" /><TextBlock x:Name="DampingReductionText" Grid.Column="1" Classes="value" Text="6.0 dB" />
+              </Grid>
+              <Slider x:Name="DampingReductionSlider" Minimum="0" Maximum="12" ValueChanged="OnDampingChanged" />
+              <CheckBox x:Name="DampingLinkBox" Content="LINK L/R DETECTORS" IsChecked="True" Checked="OnDampingChanged" Unchecked="OnDampingChanged" ToolTip.Tip="Use the stronger channel's detected resonance reduction on both channels to preserve stereo position." />
+              <Grid ColumnDefinitions="*,70,8,70" ColumnSpacing="5">
+                <TextBlock Text="Range (Hz)" Classes="caption" VerticalAlignment="Center" />
+                <TextBox x:Name="DampingMinimumBox" Grid.Column="1" LostFocus="OnDampingChanged" />
+                <TextBox x:Name="DampingMaximumBox" Grid.Column="3" LostFocus="OnDampingChanged" />
+              </Grid>
+              <Grid ColumnDefinitions="*,70,8,70" ColumnSpacing="5">
+                <TextBlock Text="Attack / release" Classes="caption" VerticalAlignment="Center" />
+                <TextBox x:Name="DampingAttackBox" Grid.Column="1" LostFocus="OnDampingChanged" />
+                <TextBox x:Name="DampingReleaseBox" Grid.Column="3" LostFocus="OnDampingChanged" />
+              </Grid>
+              <TextBlock Text="Four bounded dynamic cuts follow prominent narrow peaks. Linked detection preserves the stereo image." Classes="caption" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <Grid ColumnDefinitions="*,Auto" Margin="0,3,0,0">
+            <TextBlock Classes="sectionTitle" Text="TRUE-PEAK LIMITER" VerticalAlignment="Center" />
+            <CheckBox x:Name="LimiterEnabledBox" Grid.Column="1" Content="ARMED" IsChecked="True" Checked="OnLimiterChanged" Unchecked="OnLimiterChanged" />
+          </Grid>
+          <Border Classes="card" Padding="10">
+            <StackPanel Spacing="7">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Ceiling" Classes="caption" /><TextBlock x:Name="LimiterCeilingText" Grid.Column="1" Classes="value" Text="−1.0 dBTP" />
+              </Grid>
+              <Slider x:Name="LimiterCeilingSlider" Minimum="-12" Maximum="0" Value="-1" ValueChanged="OnLimiterChanged" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Release" Classes="caption" /><TextBlock x:Name="LimiterReleaseText" Grid.Column="1" Classes="value" Text="80 ms" />
+              </Grid>
+              <Slider x:Name="LimiterReleaseSlider" Minimum="20" Maximum="500" Value="80" ValueChanged="OnLimiterChanged" />
+            </StackPanel>
+          </Border>
+
+          <TextBlock Classes="sectionTitle" Text="MASTER OUTPUT" Margin="0,3,0,0" />
+          <Border Classes="card" Padding="10">
+            <StackPanel Spacing="7">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Gain / boost" Classes="caption" /><TextBlock x:Name="MasterGainText" Grid.Column="1" Classes="value" Text="0.0 dB" FontSize="16" />
+              </Grid>
+              <Slider x:Name="MasterGainSlider" Minimum="-24" Maximum="18" Value="0" ValueChanged="OnMasterGainChanged" />
+              <Border x:Name="BoostWarningBorder" IsVisible="False" Background="#382A16" BorderBrush="#8E6A2A" BorderThickness="1" CornerRadius="4" Padding="7">
+                <TextBlock x:Name="BoostWarningText" Text="BOOST ACTIVE · LIMITER AUTO-ARMED · verify listening level before playback" Foreground="#F2C76D" FontSize="9" FontWeight="SemiBold" TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <Border Grid.Row="2" Grid.ColumnSpan="3" Background="#0F151E" BorderBrush="#293548" BorderThickness="0,1,0,0" Padding="12,10">
+      <Grid ColumnDefinitions="1.05*,1.05*,1.1*,150,220" ColumnSpacing="10">
+        <Border Classes="card" Padding="10">
+          <Grid RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+              <Border Width="22" Height="22" CornerRadius="11" Background="#1D4B47"><TextBlock Text="L" Foreground="#65D9CC" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+              <TextBlock Grid.Column="1" Text="LEFT CHANNEL" Classes="sectionTitle" VerticalAlignment="Center" />
+              <CheckBox x:Name="LeftMuteBox" Grid.Column="2" Content="M" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Mute left channel" />
+              <CheckBox x:Name="LeftSoloBox" Grid.Column="3" Content="S" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Solo left channel" />
+              <CheckBox x:Name="LeftPolarityBox" Grid.Column="4" Content="Ø" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Invert left-channel polarity" />
+            </Grid>
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,86" ColumnSpacing="10" Margin="0,8,0,0">
+              <StackPanel>
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Input trim" Classes="caption" /><TextBlock x:Name="LeftInputText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="LeftInputSlider" Minimum="-24" Maximum="12" ValueChanged="OnChannelUtilityChanged" />
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Output trim" Classes="caption" /><TextBlock x:Name="LeftOutputText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="LeftOutputSlider" Minimum="-24" Maximum="12" ValueChanged="OnChannelUtilityChanged" />
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="Micro-delay" Classes="caption" /><TextBox x:Name="LeftDelayBox" LostFocus="OnChannelUtilityChanged" />
+                <TextBlock Text="0–20 ms · 0.01 ms entry" Classes="caption" Margin="0,4,0,0" TextWrapping="Wrap" />
+              </StackPanel>
+              <local:StereoMeter x:Name="LeftMeterProxy" Grid.Column="2" IsVisible="False" />
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="1" Classes="card" Padding="10">
+          <Grid RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+              <Border Width="22" Height="22" CornerRadius="11" Background="#5A3E20"><TextBlock Text="R" Foreground="#E8A95B" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+              <TextBlock Grid.Column="1" Text="RIGHT CHANNEL" Classes="sectionTitle" VerticalAlignment="Center" />
+              <CheckBox x:Name="RightMuteBox" Grid.Column="2" Content="M" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Mute right channel" />
+              <CheckBox x:Name="RightSoloBox" Grid.Column="3" Content="S" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Solo right channel" />
+              <CheckBox x:Name="RightPolarityBox" Grid.Column="4" Content="Ø" Checked="OnChannelUtilityChanged" Unchecked="OnChannelUtilityChanged" ToolTip.Tip="Invert right-channel polarity" />
+            </Grid>
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,86" ColumnSpacing="10" Margin="0,8,0,0">
+              <StackPanel>
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Input trim" Classes="caption" /><TextBlock x:Name="RightInputText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="RightInputSlider" Minimum="-24" Maximum="12" ValueChanged="OnChannelUtilityChanged" />
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Output trim" Classes="caption" /><TextBlock x:Name="RightOutputText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="RightOutputSlider" Minimum="-24" Maximum="12" ValueChanged="OnChannelUtilityChanged" />
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Text="Micro-delay" Classes="caption" /><TextBox x:Name="RightDelayBox" LostFocus="OnChannelUtilityChanged" />
+                <TextBlock Text="Independent speaker alignment" Classes="caption" Margin="0,4,0,0" TextWrapping="Wrap" />
+              </StackPanel>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="2" Classes="card" Padding="10">
+          <Grid RowDefinitions="Auto,*">
+            <TextBlock Text="STEREO UTILITIES" Classes="sectionTitle" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8,0,0">
+              <StackPanel>
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Balance" Classes="caption" /><TextBlock x:Name="BalanceText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="BalanceSlider" Minimum="-1" Maximum="1" ValueChanged="OnStereoChanged" />
+                <Grid ColumnDefinitions="*,Auto"><TextBlock Text="Width" Classes="caption" /><TextBlock x:Name="WidthText" Grid.Column="1" Classes="value" /></Grid>
+                <Slider x:Name="WidthSlider" Minimum="0" Maximum="200" Value="100" ValueChanged="OnStereoChanged" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="7">
+                <CheckBox x:Name="MonoAuditionBox" Content="MONO AUDITION" Checked="OnStereoChanged" Unchecked="OnStereoChanged" />
+                <TextBlock Text="Width uses mid/side scaling. Mono audition sums at unity-safe 0.5 per channel." Classes="caption" TextWrapping="Wrap" />
+              </StackPanel>
+            </Grid>
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="3" Classes="card" Padding="8">
+          <Grid RowDefinitions="Auto,*">
+            <TextBlock Text="L   OUTPUT   R" Classes="sectionTitle" HorizontalAlignment="Center" />
+            <local:StereoMeter x:Name="OutputMeter" Grid.Row="1" />
+          </Grid>
+        </Border>
+
+        <Border Grid.Column="4" Classes="card" Padding="10">
+          <StackPanel Spacing="5">
+            <TextBlock Text="ENGINE TELEMETRY" Classes="sectionTitle" />
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="4">
+              <TextBlock Text="True peak" Classes="caption" /><TextBlock x:Name="TruePeakText" Grid.Column="1" Classes="value" Text="−120 dBTP" />
+              <TextBlock Grid.Row="1" Text="Momentary loudness" Classes="caption" /><TextBlock x:Name="LoudnessText" Grid.Row="1" Grid.Column="1" Classes="value" Text="−120 LUFS" />
+              <TextBlock Grid.Row="2" Text="Limiter reduction" Classes="caption" /><TextBlock x:Name="ReductionText" Grid.Row="2" Grid.Column="1" Classes="value" Text="0.0 dB" />
+              <TextBlock Grid.Row="3" Text="Buffer health" Classes="caption" /><TextBlock x:Name="BufferHealthText" Grid.Row="3" Grid.Column="1" Classes="value" Text="0 / 0" />
+              <TextBlock Grid.Row="4" Text="Source / output" Classes="caption" /><TextBlock x:Name="RoutePeriodsText" Grid.Row="4" Grid.Column="1" Classes="value" Text="—" />
+              <TextBlock Grid.Row="5" Text="Engine latency" Classes="caption" /><TextBlock x:Name="LatencyText" Grid.Row="5" Grid.Column="1" Classes="value" Text="0.0 ms" />
+            </Grid>
+            <Border Height="1" Background="#263345" Margin="0,3" />
+            <TextBlock x:Name="StatusText" Text="Starting PulseForge Audio Host…" Foreground="#89A0B8" FontSize="9" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+  </Grid>
+  </Viewbox>
+</Window>

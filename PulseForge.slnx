@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/managed/">
+    <Project Path="managed/PulseForge.Contracts/PulseForge.Contracts.csproj" />
+    <Project Path="managed/PulseForge.Engine.Client/PulseForge.Engine.Client.csproj" />
+    <Project Path="managed/PulseForge.AudioHost/PulseForge.AudioHost.csproj" />
+    <Project Path="managed/PulseForge.Editor/PulseForge.Editor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="managed/PulseForge.Contracts.Tests/PulseForge.Contracts.Tests.csproj" />
+    <Project Path="managed/PulseForge.Editor.Tests/PulseForge.Editor.Tests.csproj" />
+    <Project Path="managed/PulseForge.Engine.Client.Tests/PulseForge.Engine.Client.Tests.csproj" />
+  </Folder>
+</Solution>

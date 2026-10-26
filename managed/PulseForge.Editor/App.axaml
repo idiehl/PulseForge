@@ -1,0 +1,92 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PulseForge.Editor.App"
+             RequestedThemeVariant="Dark">
+  <Application.Styles>
+    <FluentTheme DensityStyle="Compact" />
+    <Style Selector="Window">
+      <Setter Property="FontFamily" Value="Inter, Segoe UI" />
+      <Setter Property="Background" Value="#090D12" />
+      <Setter Property="Foreground" Value="#E7EEF5" />
+    </Style>
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Padding" Value="11,6" />
+      <Setter Property="Background" Value="#19212C" />
+      <Setter Property="BorderBrush" Value="#2B394B" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="#C9D5E2" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#243142" />
+    </Style>
+    <Style Selector="Button.accent">
+      <Setter Property="Background" Value="#276D66" />
+      <Setter Property="BorderBrush" Value="#4CB7AA" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#3A2328" />
+      <Setter Property="BorderBrush" Value="#684047" />
+      <Setter Property="Foreground" Value="#F0B6BC" />
+    </Style>
+    <Style Selector="Button.segment">
+      <Setter Property="Padding" Value="9,4" />
+      <Setter Property="MinWidth" Value="42" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="#121923" />
+      <Setter Property="BorderBrush" Value="#263345" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="7" />
+    </Style>
+    <Style Selector="Border.subtle">
+      <Setter Property="Background" Value="#0E141D" />
+      <Setter Property="BorderBrush" Value="#223043" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="5" />
+    </Style>
+    <Style Selector="TextBlock.sectionTitle">
+      <Setter Property="Foreground" Value="#91A5BD" />
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="1.1" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+      <Setter Property="Foreground" Value="#718298" />
+      <Setter Property="FontSize" Value="10" />
+    </Style>
+    <Style Selector="TextBlock.value">
+      <Setter Property="Foreground" Value="#EDF5F7" />
+      <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="Background" Value="#0C121A" />
+      <Setter Property="BorderBrush" Value="#2A394C" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Background" Value="#0E151E" />
+      <Setter Property="BorderBrush" Value="#2A394C" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="8,7" />
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+    <Style Selector="Slider">
+      <Setter Property="Foreground" Value="#61D4C7" />
+    </Style>
+    <Style Selector="CheckBox">
+      <Setter Property="Foreground" Value="#B8C5D2" />
+    </Style>
+    <Style Selector="TabControl">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+  </Application.Styles>
+</Application>

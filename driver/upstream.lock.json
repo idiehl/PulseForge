@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "upstream": "https://github.com/microsoft/Windows-driver-samples.git",
+  "commit": "197ba2156a60e2b76fcd4820bae594223e91a1e9",
+  "subtree": "audio/sysvad",
+  "subtreeTree": "6fa502f5bfb3de1395a6c9ffe71e322fd9e28926",
+  "overlayVersion": "1.0.0-alpha.2",
+  "hardwareId": "Root\\PulseForgeVirtualAudio",
+  "endpointName": "PulseForge Virtual Output"
+}

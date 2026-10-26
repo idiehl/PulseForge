@@ -1,0 +1,13 @@
+.vs/
+.idea/
+.runtime/
+out/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+TestResults/
+driver/packages/
+driver/build/

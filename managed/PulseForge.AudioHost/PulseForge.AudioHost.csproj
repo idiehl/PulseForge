@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PulseForge.Contracts\PulseForge.Contracts.csproj" />
+    <ProjectReference Include="..\PulseForge.Engine.Client\PulseForge.Engine.Client.csproj" />
+  </ItemGroup>
+</Project>

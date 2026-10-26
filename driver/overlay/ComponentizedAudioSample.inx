@@ -1,0 +1,130 @@
+; PulseForge render-only derivative of Microsoft's pinned SysVAD sample.
+[Version]
+Signature   = "$Windows NT$"
+Class       = MEDIA
+Provider    = %ProviderName%
+ClassGUID   = {4d36e96c-e325-11ce-bfc1-08002be10318}
+DriverVer   = 08/31/2026,1.0.0.2
+CatalogFile = PulseForge.VirtualAudio.cat
+PnpLockDown = 1
+
+[SourceDisksNames]
+222="PulseForge Virtual Audio Driver Disk","",222
+
+[SourceDisksFiles]
+tabletaudiosample.sys=222
+
+[SignatureAttributes]
+tabletaudiosample.sys=SignatureAttributes.DRM
+
+[SignatureAttributes.DRM]
+DRMLevel=1300
+
+[Manufacturer]
+%MfgName%=PulseForge,NT$ARCH$.10.0...26100
+
+[PulseForge.NT$ARCH$.10.0...26100]
+%PulseForge.DeviceDesc%=PulseForge_Device,Root\PulseForgeVirtualAudio
+
+[DestinationDirs]
+PulseForge.CopyList=13
+
+[PulseForge.CopyList]
+tabletaudiosample.sys
+
+[PulseForge_Device.AddReg]
+HKR,,AssociatedFilters,,"wdmaud"
+HKR,,Driver,,tabletaudiosample.sys
+HKR,PowerSettings,SingleComponentMultiFxStates,3,1,0,0,0
+HKR,PowerSettings,ConservationIdleTime,3,3,0,0,0
+HKR,PowerSettings,PerformanceIdleTime,3,3,0,0,0
+HKR,PowerSettings,IdlePowerState,3,3,0,0,0
+HKR,Drivers,SubClasses,,"wave,mixer"
+HKR,Drivers\wave\wdmaud.drv,Driver,,wdmaud.drv
+HKR,Drivers\mixer\wdmaud.drv,Driver,,wdmaud.drv
+HKR,Drivers\wave\wdmaud.drv,Description,,%PulseForge.DeviceDesc%
+HKR,Drivers\mixer\wdmaud.drv,Description,,%PulseForge.DeviceDesc%
+
+[PulseForge.I.Wave]
+AddReg=PulseForge.I.Wave.AddReg
+
+[PulseForge.I.Wave.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%PulseForge.WaveName%
+
+[PulseForge.I.Topology]
+AddReg=PulseForge.I.Topology.AddReg
+
+[PulseForge.I.Topology.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%PulseForge.EndpointName%
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+HKR,EP\0,%PKEY_AudioEndpoint_FormFactor%,0x00010001,0x1
+HKR,EP\0,%PKEY_Device_FriendlyName%,,%PulseForge.EndpointName%
+
+[PulseForge_Device.NT]
+Include=ks.inf,wdmaudio.inf
+Needs=KS.Registration,WDMAUDIO.Registration
+CopyFiles=PulseForge.CopyList
+AddReg=PulseForge_Device.AddReg
+
+[PulseForge_Device.NT.Interfaces]
+AddInterface=%KSCATEGORY_AUDIO%,%KSNAME_WaveSpeaker%,PulseForge.I.Wave
+AddInterface=%KSCATEGORY_RENDER%,%KSNAME_WaveSpeaker%,PulseForge.I.Wave
+AddInterface=%KSCATEGORY_REALTIME%,%KSNAME_WaveSpeaker%,PulseForge.I.Wave
+AddInterface=%KSCATEGORY_AUDIO%,%KSNAME_TopologySpeaker%,PulseForge.I.Topology
+AddInterface=%KSCATEGORY_TOPOLOGY%,%KSNAME_TopologySpeaker%,PulseForge.I.Topology
+
+[PulseForge_Device.NT.Services]
+AddService=PulseForgeVirtualAudio,0x00000002,PulseForge_Service
+
+[PulseForge_Service]
+DisplayName=%PulseForge.ServiceDesc%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%13%\tabletaudiosample.sys
+AddReg=PulseForge_Service.AddReg
+
+[PulseForge_Service.AddReg]
+; The stock SysVAD loopback emits a 3 kHz validation tone. PulseForge's
+; prepared source replaces it with the real system-render stream, and this
+; service setting is a second fail-closed guard against sample-tone output.
+HKR,Parameters,DisableToneGenerator,0x00010001,1
+HKR,Parameters,DoNotCreateDataFiles,0x00010001,1
+HKR,Parameters,PulseForgeLoopbackVersion,0x00010001,2
+
+[PulseForge_Device.NT.HW]
+AddReg=PulseForge_AudioHw.AddReg
+
+[PulseForge_AudioHw.AddReg]
+HKR,,DeviceType,0x10001,0x0000001D
+HKR,,Security,,"D:P(A;;GA;;;SY)(A;;GRGWGX;;;BA)(A;;GRGWGX;;;WD)(A;;GRGWGX;;;RC)"
+
+[PulseForge_Device.NT.Wdf]
+KmdfService=PulseForgeVirtualAudio,PulseForge_Wdf
+
+[PulseForge_Wdf]
+KmdfLibraryVersion=$KMDFVERSION$
+
+[Strings]
+ProviderName="PulseForge"
+MfgName="PulseForge"
+PulseForge.DeviceDesc="PulseForge Virtual Audio Device"
+PulseForge.ServiceDesc="PulseForge Virtual Audio Driver"
+PulseForge.EndpointName="PulseForge Virtual Output"
+PulseForge.WaveName="PulseForge Virtual Output WaveRT"
+
+KSNAME_WaveSpeaker="WaveSpeaker"
+KSNAME_TopologySpeaker="TopologySpeaker"
+Proxy.CLSID="{17CCA71B-ECD7-11D0-B908-00A0C9223196}"
+KSCATEGORY_AUDIO="{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_RENDER="{65E8773E-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_REALTIME="{EB115FFC-10C8-4964-831D-6DCB02E6F23F}"
+KSCATEGORY_TOPOLOGY="{DDA54A40-1E4C-11D1-A050-405705C10000}"
+KSNODETYPE_ANY="{00000000-0000-0000-0000-000000000000}"
+PKEY_AudioEndpoint_FormFactor="{1DA5D803-D492-4EDD-8C23-E0C0FFEE7F0E},0"
+PKEY_AudioEndpoint_Association="{1DA5D803-D492-4EDD-8C23-E0C0FFEE7F0E},2"
+PKEY_AudioEndpoint_Supports_EventDriven_Mode="{1DA5D803-D492-4EDD-8C23-E0C0FFEE7F0E},7"
+PKEY_Device_FriendlyName="{A45C254E-DF1C-4EFD-8020-67D146A850E0},14"

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "policy": "All production dependencies require an exact version or commit, checksum, license record, and review before enablement.",
+  "managed": {
+    "Avalonia": "11.3.20",
+    "Avalonia.Desktop": "11.3.20",
+    "Avalonia.Headless.XUnit": "11.3.20",
+    "Avalonia.Skia": "11.3.20",
+    "Avalonia.Themes.Fluent": "11.3.20",
+    "xunit": "2.9.3",
+    "Microsoft.NET.Test.Sdk": "17.14.1",
+    "xunit.runner.visualstudio": "3.1.5"
+  },
+  "native": {
+    "miniaudio": {
+      "version": "0.11.25",
+      "commit": "9634bedb5b5a2ca38c1ee7108a9358a4e233f14d",
+      "archiveSha256": "d9fc392f394fba13c4d71436fea38a4af384292871d59aa7d728c11fbc4ae978",
+      "localPatch": "native/cmake/PatchMiniaudio.cmake",
+      "license": "MIT-0-or-Public-Domain",
+      "purpose": "WASAPI loopback capture, playback, and endpoint enumeration"
+    },
+    "windows-driver-samples": {
+      "upstream": "https://github.com/microsoft/Windows-driver-samples",
+      "baseline": "audio/sysvad",
+      "commit": "197ba2156a60e2b76fcd4820bae594223e91a1e9",
+      "subtreeTree": "6fa502f5bfb3de1395a6c9ffe71e322fd9e28926",
+      "status": "guarded-overlay-requires-wdk",
+      "license": "MS-PL",
+      "purpose": "Virtual WaveRT stereo render endpoint baseline"
+    }
+  }
+}
